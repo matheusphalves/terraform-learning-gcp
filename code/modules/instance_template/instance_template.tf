@@ -26,7 +26,7 @@ resource "google_compute_instance_template" "server_template" {
     boot         = true
     device_name  = "${var.template_name}-disk"
     source_image = "projects/debian-cloud/global/images/debian-12-bookworm-v20240815"
-    type         = "pd-balanced"
+    type         = "PERSISTENT"
   }
 
   shielded_instance_config {
@@ -49,4 +49,17 @@ resource "google_storage_bucket_iam_member" "bucket_access" {
   bucket = var.setup_bucket
   role   = "roles/storage.objectViewer"
   member = "serviceAccount:${google_service_account.webserver_service_account.email}"
+}
+
+resource "google_project_iam_member" "cloud_sql_access" {
+  project = var.project_id
+  role    = "roles/cloudsql.client"
+  member  = "serviceAccount:${google_service_account.webserver_service_account.email}"
+}
+
+resource "google_project_iam_member" "secretmanager_access" {
+  project = var.project_id
+  role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:${google_service_account.webserver_service_account.email}"
+
 }
