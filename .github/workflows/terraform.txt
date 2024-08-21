@@ -1,0 +1,27 @@
+name: Terraform GCP Workflow
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up GCP SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          service_account: your-service-account@your-project.iam.gserviceaccount.com
+          project_id: your-project-id
+          key_file: ${{ secrets.GOOGLE_CREDENTIALS }}
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+      - name: Initialize Terraform
+        run: terraform init
+      - name: Format Terraform code
+        run: terraform fmt
+      - name: Validate Terraform configuration
+        run: terraform validate
+      - name: Apply Terraform configuration
+        run: terraform apply -auto-approve
