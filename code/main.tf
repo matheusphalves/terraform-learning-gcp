@@ -49,6 +49,17 @@ module "instance_template" {
   template_name      = var.template_name
   setup_bucket = module.bucket.bucket_name
 }
+module "database" {
+  source = "./modules/database"
+
+  database_name = "app_database"
+  database_instance_name = "my-app-instance"
+  database_instance_region = var.gcp_region
+  database_instance_network_id = module.network.vpc_id
+  server_service_account_email = module.instance_template.server_service_account_email
+  depends_on = [ module.network, module.instance_template ]
+
+}
 
 module "instance_group" {
   source                             = "./modules/instance_group"
@@ -58,4 +69,5 @@ module "instance_group" {
   template_instance_self_link_unique = module.instance_template.instance_template_self_link_unique
   instance_group_region              = var.gcp_region
   target_size                        = 2
+  depends_on = [ module.database ] # Needs to wait for the secrets
 }
