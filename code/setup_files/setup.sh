@@ -127,14 +127,37 @@ EOF
     sudo systemctl restart nginx
 }
 
+function recover_database_secret {
+    
+  local PROJECT_ID="learning-project-433012"
+  local SECRET_NAME="db-password"
+  local SECRET_VERSION="latest"  # Ou um número de versão específico, se necessário
+  
+  SECRET_VALUE=$(gcloud secrets versions access $SECRET_VERSION \
+    --secret=$SECRET_NAME \
+    --project=$PROJECT_ID)
+  
+  # Verifique se o segredo foi recuperado com sucesso
+  if [ $? -ne 0 ]; then
+    echo "Erro ao recuperar o segredo."
+    exit 1
+  fi
+  
+  export DB_PASSWORD="$SECRET_VALUE"
+  
+  # Adicione qualquer outro comando que precisa do segredo
+  echo "O segredo foi recuperado com sucesso e está disponível na variável DB_PASSWORD."
+
+}
+
 function execute {
     install_required_dependencies
     download_file_from_bucket "$JAR_NAME" "$BUCKET_NAME"
     install_jar_and_setup_service "$APP_NAME" "$JAR_NAME" "$APP_DIR"
     update_nginx_configuration "$NGINX_CONF" "$APP_PORT"
+    recover_database_secret
     echo "[$0] The instalation script has been completed."
 }
 
 execute
-
 
