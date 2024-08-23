@@ -6,7 +6,7 @@ This project uses the Terraform to provide and manage GCP resources. The goal is
 
 
 ## Project Structure
-
+For each environment, 
 - `main.tf`: Defines the main resources such as VM instances, networks, subnetworks and etc.
 - `variables.tf`: Declares the variables used in the project, including the specification about their type and default values.
 - `outputs.tf`: Defines the outputs, which can be available for other Terraform's modules or just for view.
