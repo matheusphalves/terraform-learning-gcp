@@ -12,10 +12,10 @@ resource "google_storage_bucket_object" "my_objects" {
       content_type = "txt/sh"
       source       = "${var.bucket_object_source_directory}/setup.sh"
     },
-    "app_demo.jar" = {
+    "marketplace_app.jar" = {
       content_type = "application/java-archive"
-      source       = "${var.bucket_object_source_directory}/hello_app.jar"
-    },
+      source       = "${var.bucket_object_source_directory}/marketplace_app.jar"
+    }
   }
 
   bucket       = google_storage_bucket.app_bucket.name
