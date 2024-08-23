@@ -14,6 +14,10 @@ variable "instance_group_region" {
   type = string
 }
 
+variable "distribution_policy_zones" {
+  type = list(string)
+}
+
 variable "instance_base_name" {
   type = string
 }

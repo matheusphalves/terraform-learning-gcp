@@ -1,17 +1,17 @@
 variable "project_id" {
-  type        = string
+  type = string
 }
 
 variable "vpc_id" {
-  type        = string
+  type = string
 }
 
 variable "subnetwork_id" {
-  type        = string
+  type = string
 }
 
 variable "startup_script_url" {
-  type        = string
+  type = string
 }
 
 variable "machine_type" {
@@ -23,5 +23,13 @@ variable "template_name" {
 }
 
 variable "setup_bucket" {
+  type = string
+}
+
+variable "tags" {
+  type = string
+}
+
+variable "service_account_email" {
   type = string
 }
