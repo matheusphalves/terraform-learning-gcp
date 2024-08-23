@@ -3,18 +3,9 @@
 # Stops the script execution if at least one command fails
 set -e  
 
-# Variables
-# BUCKET_NAME="app_demo_bucket"
-# JAR_NAME="app_demo.jar"
-# APP_NAME="app_demo"
-# APP_DIR="/opt/$APP_NAME"
-# NGINX_CONF="/etc/nginx/sites-available/default"
-# APP_PORT="8089"
-
-
-BUCKET_NAME="${1:-app_bucket_demo}"
-JAR_NAME="${2:-app_demo.jar}"
-APP_NAME="${3:-app_demo}"
+BUCKET_NAME="${1:-marketplace_bucket_app}"
+JAR_NAME="${2:-marketplace_app.jar}"
+APP_NAME="${3:-marketplace}"
 APP_DIR="/opt/$APP_NAME"
 APP_PORT="${4:-8089}"
 NGINX_CONF="${5:-/etc/nginx/sites-available/default}"
@@ -32,11 +23,11 @@ check_args() {
     fi
 }
 
-# Installs the Nginx e OpenJDK 17
+# Installs the Nginx e OpenJDK 17 JRE
 function install_required_dependencies {
-    echo "[$0] Updating packages and installing Nginx and OpenJDK 17..."
+    echo "[$0] Updating packages and installing Nginx and OpenJDK 17 JRE..."
     sudo apt-get update &&
-     sudo apt install -y nginx openjdk-17-jdk
+     sudo apt install -y nginx openjdk-17-jre
 }
 
 # Download the file from Google Cloud Storage Bucket
@@ -47,7 +38,7 @@ function download_file_from_bucket {
     local FILE_NAME="$1"
     local BUCKET_NAME="$2"
     
-    echo "[$0] Downloading JAR file ($FILE_NAME) from Google Cloud Storage..."
+    echo "[$0] Downloading JAR file ($FILE_NAME) from bucket ($BUCKET_NAME)..."
     gsutil cp gs://$BUCKET_NAME/$FILE_NAME .
 
     if [ ! -f "$JAR_NAME" ]; then
@@ -67,6 +58,12 @@ function install_jar_and_setup_service {
 
     echo "[$0] Installing $JAR_NAME at $APP_DIR"
     sudo mkdir -p $APP_DIR
+
+    if [ -f "$APP_DIR/$JAR_NAME" ]; then
+        echo "[$0] Removing old JAR file..."
+        sudo rm "$APP_DIR/$JAR_NAME"
+    fi
+
     sudo cp "$JAR_NAME" "$APP_DIR"
 
     echo "[$0] Creating service file at /etc/systemd/system/$APP_NAME.service..."
@@ -76,7 +73,7 @@ function install_jar_and_setup_service {
     After=network.target
 
     [Service]
-    ExecStart=/usr/bin/java -jar $APP_DIR/$JAR_NAME
+    ExecStart=/usr/bin/java -jar $APP_DIR/$JAR_NAME --spring.profiles.active=gcp-dev
     User=www-data
     Restart=always
 
@@ -100,7 +97,6 @@ function update_nginx_configuration {
     local NGINX_CONF="$1"
     local APP_PORT="$2"
 
-    # Backup the original Nginx configuration
     echo "[$0] Backing up the original Nginx configuration..."
     sudo cp $NGINX_CONF ${NGINX_CONF}.bak
 
@@ -122,32 +118,8 @@ function update_nginx_configuration {
     }
 EOF
 
-    # Restart Nginx to apply the configuration
-    echo "[$0] Restarting nginx.service..."
+    echo "[$0] Restart Nginx to apply the configuration..."
     sudo systemctl restart nginx
-}
-
-function recover_database_secret {
-    
-  local PROJECT_ID="learning-project-433012"
-  local SECRET_NAME="db-password"
-  local SECRET_VERSION="latest"  # Ou um número de versão específico, se necessário
-  
-  SECRET_VALUE=$(gcloud secrets versions access $SECRET_VERSION \
-    --secret=$SECRET_NAME \
-    --project=$PROJECT_ID)
-  
-  # Verifique se o segredo foi recuperado com sucesso
-  if [ $? -ne 0 ]; then
-    echo "Erro ao recuperar o segredo."
-    exit 1
-  fi
-  
-  export DB_PASSWORD="$SECRET_VALUE"
-  
-  # Adicione qualquer outro comando que precisa do segredo
-  echo "O segredo foi recuperado com sucesso e está disponível na variável DB_PASSWORD."
-
 }
 
 function execute {
@@ -155,9 +127,7 @@ function execute {
     download_file_from_bucket "$JAR_NAME" "$BUCKET_NAME"
     install_jar_and_setup_service "$APP_NAME" "$JAR_NAME" "$APP_DIR"
     update_nginx_configuration "$NGINX_CONF" "$APP_PORT"
-    recover_database_secret
     echo "[$0] The instalation script has been completed."
 }
 
 execute
-
