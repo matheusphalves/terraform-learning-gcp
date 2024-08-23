@@ -21,11 +21,14 @@ This project uses the Terraform to provide and manage GCP resources. The goal is
 2. **Create a Project at GCP**:
    - [Creating a GCP Project](https://cloud.google.com/appengine/docs/standard/python3/building-app/creating-gcp-project).
 
-3. **Test your connection to Google Cloud - Requires the GCP SDK (Optional)**:
-   ```bash
-   gcloud auth login
-   ``` 
+3. **[Create a Service Account](https://cloud.google.com/iam/docs/service-accounts-create) to allow Terraform code to apply changes**. Make sure to assign the following roles:
+   - Editor (used to create the most of resources like buckets, VMs);
+   - Project IAM Admin (used to assign roles to another service/user accounts);
+   - Secret Manager Admin (used to create and update existing secrets);
+   - Service Networking Admin (used to apply changes to the network settings)
 
 ## Cloud Architecture Diagram
 
-Describe my diagram here...
+The image below describe the most of principal resources provisioned by Terraform.
+
+![GCP Achitecture](assets/GCP_architecture.png)
