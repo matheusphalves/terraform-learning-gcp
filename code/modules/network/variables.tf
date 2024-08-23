@@ -1,6 +1,6 @@
 variable "project_id" {
-  type = string
-  description = "Define the current project ID"
+  type        = string
+  description = "Defines the current project ID"
 }
 
 variable "vpc_name" {
@@ -17,11 +17,10 @@ variable "subnetwork_configs" {
 
 variable "firewall_rule_mapping" {
   type = map(object({
-    name = string
-    protocol = string
-    ports    = list(string)
-    target_tags = list(string)
-    source_tags = list(string)
+    name          = string
+    protocol      = string
+    ports         = list(string)
+    target_tags   = list(string)
     source_ranges = list(string)
   }))
 }
