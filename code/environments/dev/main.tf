@@ -45,6 +45,7 @@ module "database" {
   database_instance_region     = var.database_instance_region
   database_instance_network_id = module.network.vpc_id
   server_service_account_email = module.iam.webserver_service_account.email
+  depends_on = [ module.network ] # Needs to wait for the VPC peering connection
 }
 
 module "instance_group" {
