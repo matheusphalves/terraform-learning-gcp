@@ -26,6 +26,12 @@ For each environment,
    - Project IAM Admin (used to assign roles to another service/user accounts);
    - Secret Manager Admin (used to create and update existing secrets);
    - Service Networking Admin (used to apply changes to the network settings)
+4. **Running code locally**. Go to /code/environments/dev/
+   - Initialize Terraform ```terraform init```
+   - Format code ```terraform fmt -recursive```
+   - Validate configuration ```terraform validate```
+   - Check the changes ```terraform plan```
+   - Apply the configuration ```terraform apply```
 
 ## Cloud Architecture Diagram
 
