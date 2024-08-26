@@ -1,11 +1,11 @@
 resource "google_compute_router" "marketplace_router" {
-  name    = "marketplace-router"
+  name    = "${var.vpc_name}-router"
   region  = local.first_private_subnetwork_region
   network = google_compute_network.vpc_network.name
 }
 
 resource "google_compute_router_nat" "marketplace_external_nat" {
-  name   = "external-marketplace-nat"
+  name   = "${var.vpc_name}-external-nat"
   router = google_compute_router.marketplace_router.name
   region = google_compute_router.marketplace_router.region
 

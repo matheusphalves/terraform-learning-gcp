@@ -28,7 +28,7 @@ resource "google_compute_target_http_proxy" "target_http_proxy" {
 }
 
 resource "google_compute_url_map" "url_map" {
-  name            = "${var.load_balancer_name}-url-map"
+  name            = "${var.load_balancer_name}"
   default_service = google_compute_backend_service.backend_service.id
 }
 
